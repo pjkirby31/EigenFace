@@ -2,7 +2,7 @@ from PIL import Image
 import numpy as np
 
 ## Determines whether or not to show images
-show_images = False
+show_images = True
 num_comps = 50
 
 ## Opens images and converts them to greyscale
@@ -26,7 +26,7 @@ if show_images:
     new_image2 = Image.fromarray(remade2)
     new_image1.show()
     new_image2.show()
-    
+
 ## Reshapes the images so they are column vectors
 flattened_array_1 = np.reshape(np.asarray(remade1),[901*1201])
 flattened_array_2 = np.reshape(np.asarray(remade2),[901*1201])
