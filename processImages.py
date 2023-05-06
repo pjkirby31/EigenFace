@@ -74,8 +74,6 @@ for num_comps in range(1,5):
     ## Selects a random person to show
     personToShow = random.randint(0,53)
     eigen = np.matrix(u[:, :])* np.diag(s[:])
-    print(eigen.shape)
-    print(eigen[0,:15])
     face = eigen[:,personToShow]
     reshaped = face.reshape(901,1201)
     mean = np.mean(reshaped)
