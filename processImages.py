@@ -2,6 +2,7 @@ import os
 from PIL import Image
 import numpy as np
 import random
+import matplotlib.pyplot as plt
 
 ## Lists all of the images in the data folder
 file_path = "data1Cropped/"
@@ -43,6 +44,7 @@ print("U shape: " + str(u.shape))
 print("V shape: " + str(v.shape))
 print("Reconstructing faces")
 
+## Reconstruct faces with different numbers of components
 for num_comps in range(1,53):
     ## Remakes the large image matrix by multiplying U*S*V'
     ## np.matrix converts U,S,V to a matrix  that can be multiplied easier
@@ -65,3 +67,53 @@ for num_comps in range(1,53):
     ## Saves image to a new folder with the component name
     new_image.save("diffPeople/" + str(num_comps) + "_comps.jpg")
     print("Saved image: " + "diffPeople/" + str(num_comps) + "_comps.jpg")
+
+
+## Show eigenfaces
+for num_comps in range(1,5):
+    ## Selects a random person to show
+    personToShow = random.randint(0,53)
+    eigen = np.matrix(u[:, :])* np.diag(s[:])
+    print(eigen.shape)
+    print(eigen[0,:15])
+    face = eigen[:,personToShow]
+    reshaped = face.reshape(901,1201)
+    mean = np.mean(reshaped)
+    reshaped += mean
+    new_image = Image.fromarray(reshaped).rotate(270, Image.NEAREST, expand = 1)
+    if new_image.mode != 'RGB':
+        new_image = new_image.convert('RGB')
+    new_image.save("eigenfaces/" + str(personToShow) + "_person.jpg")
+   
+   
+    
+## Showing a random face with first 20 prinipal component values of V matrix
+for people in range(1,2):
+    num_comps = 20
+    ## Remakes the large image matrix by multiplying U*S*V'
+    ## np.matrix converts U,S,V to a matrix  that can be multiplied easier
+    remade = np.matrix(u[:,:num_comps]) * np.diag(s[:num_comps]) * np.matrix(v[:num_comps, : ])
+    
+    ## Selects a random person to show
+    personToShow = random.randint(0,53)
+    
+    ## Extracts the random column and reshapes it to original size
+    reshaped = remade[:,personToShow].reshape(901,1201)
+    
+    ## Converts the numpy matrix to an Image and rotates it
+    new_image = Image.fromarray(reshaped).rotate(270, Image.NEAREST, expand = 1)
+    
+    ## Converts the image to be RGB
+    ## Image is still greyscale, but this just changed how it is stored
+    if new_image.mode != 'RGB':
+        new_image = new_image.convert('RGB')
+        
+    ## Saves image to a new folder with the component name
+    new_image.save("rightSingular/" + str(personToShow) + "_person.jpg")
+    print("Saved image: " + "rightSingular/" + str(personToShow) + "_person.jpg")
+    
+    ## Plotting first 20 coefficients of V matrix
+    plt.plot(list(range(1,num_comps+1)), list(np.array(v[:num_comps, personToShow ])))
+    plt.xlabel('Principal Component')
+    plt.ylabel('Corresponding Coefficient from V matrix')
+    plt.show()
